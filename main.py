@@ -324,7 +324,7 @@ st.set_page_config(page_title="EV Opinion", layout="centered")
 
 # 제목 - 글씨 3배, 단일 폰트, 굵기 없음
 st.markdown(
-    "<h1 style='font-size: 3em; font-weight: normal;'>내가 생각하는 전기차 전망</h1>",
+    "<h1 style='font-size: 3em; font-weight: normal;'>우리가 생각하는 전기차 전망</h1>",
     unsafe_allow_html=True
 )
 
