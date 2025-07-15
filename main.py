@@ -15,6 +15,25 @@ df = pd.read_csv("IEA-EV-dataEV salesHistoricalCars - IEA-EV-dataEV salesHistori
 # EV sales 데이터만 필터
 df_sales = df[(df["parameter"] == "EV sales") & (df["unit"] == "Vehicles")]
 
+# 국가 이름 표준화 (데이터의 국가명을 Plotly가 인식할 수 있도록 매핑)
+country_mapping = {
+    'United States': 'United States',
+    'USA': 'United States',
+    'US': 'United States',
+    'Korea': 'South Korea',
+    'Republic of Korea': 'South Korea',
+    'Russian Federation': 'Russia',
+    'Czech Republic': 'Czechia',
+    'Slovak Republic': 'Slovakia',
+    'Türkiye': 'Turkey',
+    'United Kingdom': 'United Kingdom',
+    'UK': 'United Kingdom',
+    'Great Britain': 'United Kingdom'
+}
+
+# 국가명 표준화 적용
+df_sales['region'] = df_sales['region'].replace(country_mapping)
+
 # 연도 선택 슬라이더
 min_year = int(df_sales["year"].min())
 max_year = int(df_sales["year"].max())
@@ -148,9 +167,23 @@ if not top_countries.empty:
     fig_bar.update_layout(yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_bar, use_container_width=True)
 
-# ---------------------------
-# 통계 정보
-# ---------------------------
+# 디버깅을 위한 정보 표시
+st.sidebar.title("📊 데이터 정보")
+st.sidebar.write(f"**선택된 연도**: {year}")
+st.sidebar.write(f"**데이터가 있는 국가 수**: {len(df_year[df_year['value'] > 0])}")
+
+# 실제 데이터에 있는 국가들 표시
+if not df_year.empty:
+    st.sidebar.write("**데이터가 있는 주요 국가:**")
+    top_5_countries = df_year.nlargest(5, 'value')[['region', 'value']]
+    for _, row in top_5_countries.iterrows():
+        st.sidebar.write(f"- {row['region']}: {row['value']:,.0f}")
+
+# 원본 데이터에서 미국 관련 데이터 확인
+us_data = df_sales[df_sales['region'].str.contains('United States|USA|US', case=False, na=False)]
+if not us_data.empty:
+    st.sidebar.write("**미국 데이터 확인:**")
+    st.sidebar.write(us_data[['region', 'year', 'value']].tail())
 col1, col2, col3 = st.columns(3)
 with col1:
     total_sales = df_year['value'].sum()
@@ -167,4 +200,33 @@ with col3:
 # 원본 데이터 (옵션)
 # ---------------------------
 with st.expander("🔍 원본 데이터 보기"):
+    st.write("**전체 데이터 샘플:**")
     st.write(df.head())
+    st.write("**EV Sales 데이터 샘플:**")
+    st.write(df_sales.head())
+    st.write("**선택된 연도 데이터:**")
+    st.write(df_year.head())
+
+# 디버깅을 위한 정보 표시
+st.sidebar.title("📊 데이터 정보")
+st.sidebar.write(f"**선택된 연도**: {year}")
+st.sidebar.write(f"**데이터가 있는 국가 수**: {len(df_year[df_year['value'] > 0])}")
+
+# 실제 데이터에 있는 국가들 표시
+if not df_year.empty:
+    st.sidebar.write("**데이터가 있는 주요 국가:**")
+    top_5_countries = df_year.nlargest(5, 'value')[['region', 'value']]
+    for _, row in top_5_countries.iterrows():
+        st.sidebar.write(f"- {row['region']}: {row['value']:,.0f}")
+
+# 원본 데이터에서 미국 관련 데이터 확인
+us_data = df_sales[df_sales['region'].str.contains('United States|USA|US', case=False, na=False)]
+if not us_data.empty:
+    st.sidebar.write("**미국 데이터 확인:**")
+    st.sidebar.write(us_data[['region', 'year', 'value']].tail())
+else:
+    st.sidebar.write("**미국 데이터를 찾을 수 없음**")
+    # 데이터에 있는 모든 국가 이름 표시
+    unique_countries = df_sales['region'].unique()
+    st.sidebar.write("**데이터에 있는 모든 국가:**")
+    st.sidebar.write(unique_countries)
