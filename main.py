@@ -97,11 +97,20 @@ fig_map = px.choropleth(
     locations="region",
     color="value",
     locationmode="country names",
-    color_continuous_scale="Blues",
+    color_continuous_scale=[
+        [0, 'white'],           # 판매량 0 (흰색)
+        [0.001, '#f0f8ff'],     # 매우 적은 판매량 (매우 연한 파란색)
+        [0.2, '#add8e6'],       # 적은 판매량 (연한 파란색)
+        [0.4, '#87ceeb'],       # 보통 판매량 (하늘색)
+        [0.6, '#4169e1'],       # 많은 판매량 (파란색)
+        [0.8, '#0000cd'],       # 매우 많은 판매량 (진한 파란색)
+        [1.0, '#000080']        # 최대 판매량 (가장 진한 파란색)
+    ],
     title=f"🌍 {year} EV Sales by Country",
     labels={"value": "EV Sales (Vehicles)", "region": "Country"},
     hover_name="region",
-    hover_data={"value": ":,.0f"}
+    hover_data={"value": ":,.0f"},
+    range_color=[0, None]  # 0부터 최대값까지 색상 범위 설정
 )
 
 # 지도 스타일 업데이트
@@ -111,17 +120,10 @@ fig_map.update_geos(
     projection_type='natural earth'
 )
 
-# 색상 바 업데이트
+# 색상 바 설정
 fig_map.update_coloraxes(
     colorbar_title="EV Sales (Vehicles)",
-    colorscale=[
-        [0, 'white'],        # 데이터가 없는 국가 (흰색)
-        [0.1, '#f0f8ff'],    # 매우 연한 파란색
-        [0.3, '#87ceeb'],    # 연한 파란색
-        [0.5, '#4169e1'],    # 중간 파란색
-        [0.7, '#0000cd'],    # 진한 파란색
-        [1, '#000080']       # 가장 진한 파란색
-    ]
+    colorbar_title_side="right"
 )
 
 fig_map.update_layout(
