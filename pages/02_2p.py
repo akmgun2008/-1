@@ -43,17 +43,22 @@ st.markdown('''
     </style>
 ''', unsafe_allow_html=True)
 
-# 컨테이너 안에 제목 + 본문
+# 제목과 본문 표시
 st.markdown('''
 <div class='container'>
     <div class='title'>느낀점</div>
-
     <div class='content'>
-        <pre>
+''', unsafe_allow_html=True)
+
+# 본문은 st.write로 줄바꿈 유지
+st.write('''
 이태완:개발을 할때 ai사용이 매우 효율적이란 것을 깨달았다. 또한 깃허브와 스트림릿이라는 프로그램을 상용해봄으로서 개발이나 코딩에대한 지식을 많이 알아간것 같다.:
 
 홍의찬:ai가 정말 빠르게 발전해서 몇년전에는 사이트를 만들려면 고등학생 수준으로는 불가능하였는데 할수있어서 놀랐다 이젠 코딩을 배우는것보다 ai활용을 배우는것이 맞는것같다
-        </pre>
+''')
+
+# 닫는 div 마크업
+st.markdown('''
     </div>
 </div>
 ''', unsafe_allow_html=True)
