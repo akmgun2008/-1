@@ -7,7 +7,7 @@ st.title("🔋 Global EV Sales Dashboard")
 st.write("데이터 출처: IEA EV Sales Historical Cars")
 
 # 데이터 로드 (파일명을 꼭 확인!)
-df = pd.read_csv("ev_sales.csv")
+df = pd.read_csv("IEA-EV-dataEV salesHistoricalCars - IEA-EV-dataEV salesHistoricalCars.csv")
 
 # EV sales 데이터만 필터
 df_sales = df[(df["parameter"] == "EV sales") & (df["unit"] == "Vehicles")]
