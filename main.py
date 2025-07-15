@@ -91,14 +91,29 @@ df_year_complete = all_countries_df.merge(
 df_year_complete['value'] = df_year_complete['value_actual'].fillna(0)
 df_year_complete = df_year_complete[['region', 'value']]
 
-# 0보다 큰 값만 색상 스케일에 적용하기 위한 처리
-df_year_complete['value_for_color'] = df_year_complete['value'].replace(0, np.nan)
+# 더 간단한 방법으로 지도 생성
+fig_map = px.choropleth(
+    df_year_complete,
+    locations="region",
+    color="value",
+    locationmode="country names",
+    color_continuous_scale="Blues",
+    title=f"🌍 {year} EV Sales by Country",
+    labels={"value": "EV Sales (Vehicles)", "region": "Country"},
+    hover_name="region",
+    hover_data={"value": ":,.0f"}
+)
 
-# 커스텀 색상 스케일 생성 (흰색 -> 파란색)
-fig_map = go.Figure(data=go.Choropleth(
-    locations=df_year_complete['region'],
-    z=df_year_complete['value_for_color'],
-    locationmode='country names',
+# 지도 스타일 업데이트
+fig_map.update_geos(
+    showframe=False,
+    showcoastlines=True,
+    projection_type='natural earth'
+)
+
+# 색상 바 업데이트
+fig_map.update_coloraxes(
+    colorbar_title="EV Sales (Vehicles)",
     colorscale=[
         [0, 'white'],        # 데이터가 없는 국가 (흰색)
         [0.1, '#f0f8ff'],    # 매우 연한 파란색
@@ -106,42 +121,10 @@ fig_map = go.Figure(data=go.Choropleth(
         [0.5, '#4169e1'],    # 중간 파란색
         [0.7, '#0000cd'],    # 진한 파란색
         [1, '#000080']       # 가장 진한 파란색
-    ],
-    colorbar=dict(
-        title="EV Sales (Vehicles)",
-        titleside="right"
-    ),
-    hovertemplate='<b>%{text}</b><br>EV Sales: %{z:,.0f}<extra></extra>',
-    text=df_year_complete['region'],
-    showscale=True,
-    zmid=0  # 중간값 설정
-))
-
-# 데이터가 없는 국가들을 흰색으로 표시
-zero_countries = df_year_complete[df_year_complete['value'] == 0]
-fig_map.add_trace(go.Choropleth(
-    locations=zero_countries['region'],
-    z=[0] * len(zero_countries),
-    locationmode='country names',
-    colorscale=[[0, 'white'], [1, 'white']],
-    showscale=False,
-    hovertemplate='<b>%{text}</b><br>EV Sales: 0<extra></extra>',
-    text=zero_countries['region']
-))
-
-fig_map.update_geos(
-    showframe=False,
-    showcoastlines=True,
-    projection_type='natural earth'
+    ]
 )
 
 fig_map.update_layout(
-    title=f"🌍 {year} EV Sales by Country",
-    geo=dict(
-        showframe=False,
-        showcoastlines=True,
-        projection_type='natural earth'
-    ),
     height=600
 )
 
